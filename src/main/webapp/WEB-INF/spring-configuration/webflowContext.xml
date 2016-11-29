@@ -13,42 +13,4 @@
        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
        http://www.springframework.org/schema/webflow-config http://www.springframework.org/schema/webflow-config/spring-webflow-config-2.3.xsd">
 
-    <webflow:flow-builder-services id="builder"
-                                   development="true"
-                                   view-factory-creator="viewFactoryCreator"
-                                   expression-parser="expressionParser"/>
-
-    <webflow:flow-registry id="loginFlowRegistry" flow-builder-services="builder" base-path="/WEB-INF/webflow">
-        <webflow:flow-location-pattern value="/login/*-webflow.xml"/>
-    </webflow:flow-registry>
-
-    <webflow:flow-executor id="logoutFlowExecutor" flow-registry="logoutFlowRegistry">
-        <webflow:flow-execution-attributes>
-            <webflow:always-redirect-on-pause value="false"/>
-            <webflow:redirect-in-same-state value="false"/>
-        </webflow:flow-execution-attributes>
-    </webflow:flow-executor>
-
-    <webflow:flow-registry id="logoutFlowRegistry" flow-builder-services="builder" base-path="/WEB-INF/webflow">
-        <webflow:flow-location-pattern value="/logout/*-webflow.xml"/>
-    </webflow:flow-registry>
-
-    <bean id="expressionParser" class="org.springframework.webflow.expression.spel.WebFlowSpringELExpressionParser"
-          c:conversionService-ref="logoutConversionService">
-        <constructor-arg>
-            <bean class="org.springframework.expression.spel.standard.SpelExpressionParser"/>
-        </constructor-arg>
-    </bean>
-
-    <bean id="viewFactoryCreator" class="org.springframework.webflow.mvc.builder.MvcViewFactoryCreator">
-        <property name="viewResolvers">
-            <util:list>
-                <ref bean="viewResolver"/>
-                <ref bean="internalViewResolver"/>
-            </util:list>
-        </property>
-    </bean>
-    
-    <bean id="logoutConversionService" class="org.jasig.cas.web.flow.LogoutConversionService"/>
-
 </beans>

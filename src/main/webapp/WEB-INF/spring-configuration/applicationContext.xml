@@ -1,17 +1,66 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xmlns:p="http://www.springframework.org/schema/p"
-       xmlns:c="http://www.springframework.org/schema/c"
-       xmlns:util="http://www.springframework.org/schema/util"
-       xmlns:aop="http://www.springframework.org/schema/aop"
-       xmlns:context="http://www.springframework.org/schema/context"
-       xmlns="http://www.springframework.org/schema/beans"
-       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+	xmlns:p="http://www.springframework.org/schema/p" xmlns:c="http://www.springframework.org/schema/c"
+	xmlns:util="http://www.springframework.org/schema/util" xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:context="http://www.springframework.org/schema/context" xmlns="http://www.springframework.org/schema/beans"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
         http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
         http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd
         http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
 
-    <context:component-scan base-package="org.jasig.cas" />
-    <context:annotation-config/>
+	<context:component-scan base-package="org.jasig.cas" />
+	<context:annotation-config />
+
+	<bean id="principalFactory"
+		class="org.jasig.cas.authentication.principal.DefaultPrincipalFactory"
+		scope="prototype" />
+
+	<bean id="servicesManager" class="org.jasig.cas.services.DefaultServicesManagerImpl"
+		c:serviceRegistryDao-ref="serviceRegistryDao" />
+
+	<!-- Ticket Registry -->
+	<bean id="ticketRegistry" class="org.jasig.cas.ticket.registry.DefaultTicketRegistry" />
+
+	<bean id="serviceRegistryDao" class="org.jasig.cas.services.JsonServiceRegistryDao"
+		c:configDirectory="/WEB-INF/services" />
+
+	<bean id="noRedirectHttpClient" class="org.jasig.cas.util.http.SimpleHttpClientFactoryBean"
+		parent="supportsTrustStoreSslSocketFactoryHttpClient"
+		p:redirectsEnabled="false" p:circularRedirectsAllowed="false" />
+
+	<bean id="logoutManager" class="org.jasig.cas.logout.LogoutManagerImpl"
+		c:servicesManager-ref="servicesManager" c:httpClient-ref="noRedirectHttpClient"
+		c:logoutMessageBuilder-ref="logoutBuilder"
+		p:singleLogoutCallbacksDisabled="${slo.callbacks.disabled:false}"
+		p:asynchronous="${slo.callbacks.asynchronous:true}" />
+
+	<bean id="logoutBuilder" class="org.jasig.cas.logout.SamlCompliantLogoutMessageCreator" />
+
+	<bean id="serviceTicketUniqueIdGenerator" class="org.jasig.cas.util.DefaultUniqueTicketIdGenerator"
+		c:maxLength="20" c:suffix="${host.name}" />
+
+	<util:map id="uniqueIdGeneratorsMap">
+		<entry
+			key="org.jasig.cas.authentication.principal.SimpleWebApplicationServiceImpl"
+			value-ref="serviceTicketUniqueIdGenerator" />
+	</util:map>
+	
+	<bean id="serviceTicketExpirationPolicy" class="org.jasig.cas.ticket.support.MultiTimeUseOrTimeoutExpirationPolicy"
+          c:numberOfUses="1" c:timeToKill="${st.timeToKillInSeconds:600}" c:timeUnit-ref="SECONDS"/>
+
+	<util:constant id="SECONDS" static-field="java.util.concurrent.TimeUnit.SECONDS"/>
+	
+	<bean id="grantingTicketExpirationPolicy" class="org.jasig.cas.ticket.support.TicketGrantingTicketExpirationPolicy"
+          c:maxTimeToLive="${tgt.maxTimeToLiveInSeconds:28800}" c:timeToKill="${tgt.timeToKillInSeconds:7200}" c:timeUnit-ref="SECONDS" />
+
+	<alias name="acceptAnyAuthenticationPolicyFactory" alias="authenticationPolicyFactory" />
+	
+	<alias name="anyAuthenticationPolicy" alias="authenticationPolicy"/>
+	
+	<util:map id="authenticationHandlersResolvers"/>
+	
+	<util:list id="authenticationMetadataPopulators"/>
+	
+	<bean id="attributeRepository" class="org.jasig.services.persondir.support.NamedStubPersonAttributeDao"/>
 
 </beans>
