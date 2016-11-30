@@ -10,4 +10,16 @@
        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
        http://www.springframework.org/schema/webflow-config http://www.springframework.org/schema/webflow-config/spring-webflow-config-2.3.xsd">
 	
+	<!-- login webflow configuration -->
+    <bean id="loginFlowHandlerMapping" class="org.springframework.webflow.mvc.servlet.FlowHandlerMapping"
+          p:flowRegistry-ref="loginFlowRegistry" p:order="2">
+        <property name="interceptors">
+            <array value-type="org.springframework.web.servlet.HandlerInterceptor">
+                <ref bean="localeChangeInterceptor"/>
+            </array>
+        </property>
+    </bean>
+    
+    <bean id="localeChangeInterceptor" class="org.springframework.web.servlet.i18n.LocaleChangeInterceptor"/>
+	
 </beans>

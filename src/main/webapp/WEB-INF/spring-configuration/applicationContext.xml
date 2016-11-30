@@ -22,7 +22,7 @@
 	<bean id="ticketRegistry" class="org.jasig.cas.ticket.registry.DefaultTicketRegistry" />
 
 	<bean id="serviceRegistryDao" class="org.jasig.cas.services.JsonServiceRegistryDao"
-		c:configDirectory="/WEB-INF/services" />
+		c:configDirectory="classpath:services" />
 
 	<bean id="noRedirectHttpClient" class="org.jasig.cas.util.http.SimpleHttpClientFactoryBean"
 		parent="supportsTrustStoreSslSocketFactoryHttpClient"
@@ -62,5 +62,10 @@
 	<util:list id="authenticationMetadataPopulators"/>
 	
 	<bean id="attributeRepository" class="org.jasig.services.persondir.support.NamedStubPersonAttributeDao"/>
-
+	
+	<!-- CAS Application Context Configuration -->
+    <util:list id="serviceFactoryList" value-type="org.jasig.cas.authentication.principal.ServiceFactory">
+        <ref bean="webApplicationServiceFactory" />
+    </util:list>
+	
 </beans>
