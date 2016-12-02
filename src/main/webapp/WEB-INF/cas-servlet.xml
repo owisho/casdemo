@@ -11,7 +11,7 @@
        http://www.springframework.org/schema/webflow-config http://www.springframework.org/schema/webflow-config/spring-webflow-config-2.3.xsd">
 	
 	<!-- login webflow configuration -->
-    <bean id="loginFlowHandlerMapping" class="org.springframework.webflow.mvc.servlet.FlowHandlerMapping"
+    <!--<bean id="loginFlowHandlerMapping" class="org.springframework.webflow.mvc.servlet.FlowHandlerMapping"
           p:flowRegistry-ref="loginFlowRegistry" p:order="2">
         <property name="interceptors">
             <array value-type="org.springframework.web.servlet.HandlerInterceptor">
@@ -20,6 +20,44 @@
         </property>
     </bean>
     
-    <bean id="localeChangeInterceptor" class="org.springframework.web.servlet.i18n.LocaleChangeInterceptor"/>
+    <bean id="localeChangeInterceptor" class="org.springframework.web.servlet.i18n.LocaleChangeInterceptor"/> -->
 	
+	<webflow:flow-registry id="loginFlowRegistry"
+		flow-builder-services="flowBuilderServices" base-path="/WEB-INF/webflow">
+		<webflow:flow-location-pattern value="/login/*-webflow.xml" />
+	</webflow:flow-registry>
+
+	<!-- Web Flow 中的视图通过 MVC 框架的视图技术来呈现 -->
+	<webflow:flow-builder-services id="flowBuilderServices"
+		view-factory-creator="mvcViewFactoryCreator" />
+
+	<!-- 指明 MVC 框架的 view resolver ，用于通过 view 名查找资源 -->
+	<bean id="mvcViewFactoryCreator"
+		class="org.springframework.webflow.mvc.builder.MvcViewFactoryCreator">
+		<property name="viewResolvers" ref="viewResolver" />
+	</bean>
+
+	<bean id="viewResolver"
+		class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+		<property name="viewClass"
+			value="org.springframework.web.servlet.view.JstlView" />
+		<property name="prefix" value="/WEB-INF/jsp/" />
+		<property name="suffix" value=".jsp" />
+	</bean>
+	
+	<bean id="viewMappings" class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
+		<property name="mappings">
+			<value>/login=flowController</value>
+		</property>
+		<property name="defaultHandler">
+			<bean class="org.springframework.web.servlet.mvc.UrlFilenameViewController"/>
+		</property>
+	</bean>
+	
+	<bean id="flowController" class="org.springframework.webflow.mvc.servlet.FlowController">
+		<property name="flowExecutor" ref="flowExecutor" />
+	</bean>
+	
+	<webflow:flow-executor id="flowExecutor" flow-registry="loginFlowRegistry">
+	</webflow:flow-executor>
 </beans>

@@ -10,27 +10,4 @@
        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
        http://www.springframework.org/schema/webflow-config http://www.springframework.org/schema/webflow-config/spring-webflow-config-2.3.xsd">
 
-	<webflow:flow-registry id="loginFlowRegistry"
-		flow-builder-services="flowBuilderServices" base-path="/WEB-INF/webflow">
-		<webflow:flow-location-pattern value="/login/*-webflow.xml" />
-	</webflow:flow-registry>
-
-	<!-- Web Flow 中的视图通过 MVC 框架的视图技术来呈现 -->
-	<webflow:flow-builder-services id="flowBuilderServices"
-		view-factory-creator="mvcViewFactoryCreator" />
-
-	<!-- 指明 MVC 框架的 view resolver ，用于通过 view 名查找资源 -->
-	<bean id="mvcViewFactoryCreator"
-		class="org.springframework.webflow.mvc.builder.MvcViewFactoryCreator">
-		<property name="viewResolvers" ref="viewResolver" />
-	</bean>
-
-	<bean id="viewResolver"
-		class="org.springframework.web.servlet.view.InternalResourceViewResolver">
-		<property name="viewClass"
-			value="org.springframework.web.servlet.view.JstlView" />
-		<property name="prefix" value="/WEB-INF/jsp/" />
-		<property name="suffix" value=".jsp" />
-	</bean>
-
 </beans>

@@ -1,7 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<flow xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-      xmlns="http://www.springframework.org/schema/webflow"
-      xsi:schemaLocation="http://www.springframework.org/schema/webflow
+<flow xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.springframework.org/schema/webflow"
+	xsi:schemaLocation="http://www.springframework.org/schema/webflow
                           http://www.springframework.org/schema/webflow/spring-webflow.xsd">
 
+	<on-start>
+		<evaluate expression="initialFlowSetupAction"></evaluate>
+	</on-start>
+
+	<action-state id="ticketGrantingTicketCheck">
+		<evaluate expression="ticketGrantingTicketCheckAction" />
+		<transition on="loginEnd" to="success"></transition>
+		<transition on="notExists" to="generateLoginTicket"></transition>
+	</action-state>
+
+	<action-state id="generateLoginTicket">
+        <evaluate expression="generateLoginTicketAction.generate(flowRequestContext)"/>
+        <transition on="generated" to="viewLoginForm"/>
+    </action-state>
+	
+	<end-state id="loginEnd" view="success"></end-state>
+	
+	<end-state id="notExists" view="notExists"></end-state>
 </flow>
