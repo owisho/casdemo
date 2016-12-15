@@ -1,0 +1,7 @@
+{
+  "@class" : "org.jasig.cas.services.RegexRegisteredService",
+  "serviceId" : "^123.*",
+  "name" : "123",
+  "id" : 601,
+  "description" : "sample"
+}

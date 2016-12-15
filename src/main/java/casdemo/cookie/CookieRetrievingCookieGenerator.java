@@ -10,10 +10,11 @@ public class CookieRetrievingCookieGenerator extends CookieGenerator {
 	public String retrieveCookieValue(final HttpServletRequest request) {
 		try {
 			final Cookie cookie = org.springframework.web.util.WebUtils.getCookie(request, getCookieName());
+			return cookie.getValue();
 		} catch (final Exception e) {
 			logger.debug(e.getMessage(), e);
+			return null;
 		}
-		return null;
 	}
-
+	
 }
