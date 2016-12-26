@@ -11,7 +11,7 @@
 		<input type="hidden" name="execution" value="${flowExecutionKey}" />
 		<input type="hidden" name="_eventId" value="submit" /> <input
 			name="username" /> <input name="password" />
-		<input type="button"  name="submit" value="提交"/>
+		<input type="submit"  name="submit" value="提交"/>
 	</form>
 </body>
 </html>

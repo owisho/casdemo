@@ -3,6 +3,8 @@
 	xsi:schemaLocation="http://www.springframework.org/schema/webflow
                           http://www.springframework.org/schema/webflow/spring-webflow.xsd">
 
+	<var name="credential" class="org.jasig.cas.authentication.UsernamePasswordCredential"/>
+
 	<on-start>
 		<evaluate expression="initialFlowSetupAction"></evaluate>
 	</on-start>
@@ -21,16 +23,42 @@
 		<binder>
 			<binding property="username" required="true" />
 			<binding property="password" required="true" />
-
-			<!-- <binding property="rememberMe" /> -->
 		</binder>
 		<on-entry>
 			<set name="viewScope.commandName" value="'credential'" />
-
-			<!-- <evaluate expression="samlMetadataUIParserAction" /> -->
 		</on-entry>
 		<transition on="submit" bind="true" validate="true" to="realSubmit" />
 	</view-state>
 
+	<action-state id="realSubmit">
+		<evaluate expression="authenticationViaFormAction.submit(flowRequestContext,flowScope.credential)" 
+		result="flowScope.authenticationResult"></evaluate>
+		<transition on="success" to="sendTicketGrantingTicket"></transition>
+	</action-state>
+
+	<action-state id="sendTicketGrantingTicket">
+		<evaluate expression="sendTicketGrantingTicketAction"></evaluate>
+		<transition to="serviceCheck"></transition>
+	</action-state>
+	
+	<decision-state id="serviceCheck">
+		<if test="flowScope.service!=null" then="generateServiceTicket" else="success"/>
+	</decision-state>
+
+	<action-state id="generateServiceTicket">
+		<evaluate expression="generateServiceTicketAction"></evaluate>
+		<transition on="success" to="redirect"/>
+	</action-state>
+	
+	<action-state id="redirect">
+        <evaluate expression="flowScope.service.getResponse(requestScope.serviceTicketId)"
+                  result-type="org.jasig.cas.authentication.principal.Response" result="requestScope.response"/>
+        <transition to="redirectView"/>
+    </action-state>
+	
+	<end-state id="redirectView" view="externalRedirect:#{requestScope.response.url}"/>
+	
+	<end-state id="success" view="success"></end-state>
+	
 	<end-state id="notExists" view="notExists"></end-state>
 </flow>

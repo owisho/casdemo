@@ -59,8 +59,6 @@
 	
 	<alias name="anyAuthenticationPolicy" alias="authenticationPolicy"/>
 	
-	<util:map id="authenticationHandlersResolvers"/>
-	
 	<util:list id="authenticationMetadataPopulators"/>
 	
 	<bean id="attributeRepository" class="org.jasig.services.persondir.support.NamedStubPersonAttributeDao"/>
