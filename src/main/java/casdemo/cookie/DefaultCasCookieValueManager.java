@@ -1,14 +1,12 @@
 package casdemo.cookie;
 
-import java.io.Serializable;
-
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.StringUtils;
 import org.jasig.cas.CipherExecutor;
-import org.jasig.inspektr.common.web.ClientInfo;
-import org.jasig.inspektr.common.web.ClientInfoHolder;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 @Component("defaultCookieValueManager")
@@ -17,16 +15,18 @@ public class DefaultCasCookieValueManager implements CookieValueManager{
 	private static final char COOKIE_FIELD_SEPARATOR = '@';
     private static final int COOKIE_FIELDS_LENGTH = 3;
 	
-	private CipherExecutor<Serializable, String> cipherExecutor = NoOpCipherExecutor.getInstance();
+    @Autowired
+    @Qualifier("tgcCipherExecutor")
+	private CipherExecutor<String, String> cipherExecutor;
 	
 	@Override
 	public String buildCookieValue(String givenCookieValue,
 			HttpServletRequest request) {
 		final StringBuilder builder = new StringBuilder(givenCookieValue);
-		final ClientInfo clientInfo = ClientInfoHolder.getClientInfo();
+		final String remoteAddr = request.getRemoteAddr();
 		builder.append(COOKIE_FIELD_SEPARATOR);
-		builder.append(clientInfo.getClientIpAddress());
-		final String userAgent = WebUtils.getHttpServletRequestUserAgent(request);
+		builder.append(remoteAddr);
+		final String userAgent = request.getHeader("user-agent");
 		builder.append(COOKIE_FIELD_SEPARATOR);
         builder.append(userAgent);
         final String res = builder.toString();
@@ -59,9 +59,8 @@ public class DefaultCasCookieValueManager implements CookieValueManager{
                     + request.getRemoteAddr());
         }
 
-        final String agent = WebUtils.getHttpServletRequestUserAgent(request);
-        if (!userAgent.equals(agent)) {
-            throw new IllegalStateException("Invalid cookie. Required user-agent does not match " + agent);
+        if (!userAgent.equals(request.getHeader("user-agent"))) {
+            throw new IllegalStateException("Invalid cookie. Required user-agent does not match " + request.getHeader("user-agent"));
         }
         return value;
 	}

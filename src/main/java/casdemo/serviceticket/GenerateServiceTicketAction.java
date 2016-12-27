@@ -1,5 +1,8 @@
 package casdemo.serviceticket;
 
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+
 import org.jasig.cas.CentralAuthenticationService;
 import org.jasig.cas.authentication.Authentication;
 import org.jasig.cas.authentication.AuthenticationContext;
@@ -46,6 +49,13 @@ public class GenerateServiceTicketAction extends AbstractAction {
 	protected Event doExecute(RequestContext context) throws Exception {
 
 		final Service service = WebUtils.getService(context);
+		
+		HttpServletRequest request = WebUtils.getHttpServletRequest(context);
+		Cookie[] cookies = request.getCookies();
+		
+		for(Cookie cookie:cookies){
+			System.out.println(cookie.getValue());
+		}
 		final String ticketGrantingTicket = WebUtils
 				.getTicketGrantingTicketId(context);
 		try {

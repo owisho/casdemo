@@ -12,6 +12,7 @@
 	<action-state id="ticketGrantingTicketCheck">
 		<evaluate expression="ticketGrantingTicketCheckAction" />
 		<transition on="notExists" to="serviceAuthorizationCheck"></transition>
+		<transition on="valid" to="serviceCheck"></transition>
 	</action-state>
 
 	<action-state id="serviceAuthorizationCheck">

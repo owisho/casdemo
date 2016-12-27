@@ -23,9 +23,31 @@ public class CookieRetrievingCookieGenerator extends CookieGenerator {
     
     @Override
     @Autowired
-	public void setCookieName(@Value("${tgc.name:TGC}")String cookieName) {
-		super.setCookieName(cookieName);
-	}
+    public void setCookieName(@Value("${tgc.name:TGC}")
+                                  final String cookieName) {
+        super.setCookieName(cookieName);
+    }
+
+    @Override
+    @Autowired
+    public void setCookiePath(@Value("${tgc.path:/casdemo}")
+                                  final String cookiePath) {
+        super.setCookiePath(cookiePath);
+    }
+
+    @Override
+    @Autowired
+    public void setCookieMaxAge(@Value("${tgc.maxAge:7889231}")
+                                    final Integer cookieMaxAge) {
+        super.setCookieMaxAge(cookieMaxAge);
+    }
+
+    /*@Override
+    @Autowired
+    public void setCookieSecure(@Value("${tgc.secure:true}")
+                                    final boolean cookieSecure) {
+        super.setCookieSecure(cookieSecure);
+    }*/
 
 	@Autowired
 	private CookieValueManager casCookieValueManager;
@@ -34,16 +56,27 @@ public class CookieRetrievingCookieGenerator extends CookieGenerator {
 		try {
 			final Cookie cookie = org.springframework.web.util.WebUtils
 					.getCookie(request, getCookieName());
-			return cookie.getValue();
+			return cookie==null?null:casCookieValueManager.obtainCookieValue(cookie, request);
 		} catch (final Exception e) {
 			logger.debug(e.getMessage(), e);
 			return null;
 		}
 	}
 
+	/*public void myAddCookie(final HttpServletRequest request,final HttpServletResponse response, final String cookieValue){
+		
+		final String theCookieValue = casCookieValueManager
+				.buildCookieValue(cookieValue, request);
+		Cookie cookie = new Cookie(getCookieName(), theCookieValue);
+		cookie.setPath("/");
+		cookie.setMaxAge(DEFAULT_REMEMBER_ME_MAX_AGE);
+		response.addCookie(cookie);
+		
+	}*/
+	
 	public void addCookie(final HttpServletRequest request,
 			final HttpServletResponse response, final String cookieValue) {
-		final String theCookieValue = this.casCookieValueManager
+		final String theCookieValue = casCookieValueManager
 				.buildCookieValue(cookieValue, request);
 
 		if (StringUtils

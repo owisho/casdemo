@@ -1,7 +1,7 @@
 {
   "@class" : "org.jasig.cas.services.RegexRegisteredService",
-  "serviceId" : "^123.*",
-  "name" : "123",
-  "id" : 601,
+  "serviceId" : "^http://localhost:8080/casdemoclient/.*",
+  "name" : "client",
+  "id" : 1,
   "description" : "sample"
 }
